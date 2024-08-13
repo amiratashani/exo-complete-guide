@@ -7,11 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.exo_completeguide.data.getTelewebionHls
+import com.example.exo_completeguide.data.getTelewebionLive
+import com.example.exo_completeguide.data.getTelewebionLivePlayList
 import com.example.exo_completeguide.data.getTelewebionPlayListHls
 import com.example.exo_completeguide.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -35,19 +36,27 @@ class MainActivity : AppCompatActivity() {
                 intent.putParcelableArrayListExtra(PlayerActivity.VIDEOS_KEY, getTelewebionPlayListHls())
                 startActivity(intent)
             }
-            
+
+            btn3.setOnClickListener {
+                val intent = Intent(this@MainActivity, PlayerActivity::class.java)
+                intent.putParcelableArrayListExtra(PlayerActivity.VIDEOS_KEY, getTelewebionLive())
+                startActivity(intent)
+            }
+
+            btn4.setOnClickListener {
+                val intent = Intent(this@MainActivity, PlayerActivity::class.java)
+                intent.putParcelableArrayListExtra(PlayerActivity.VIDEOS_KEY, getTelewebionLivePlayList())
+                startActivity(intent)
+            }
+
         }
-
-
     }
 
     private fun updateWindowInset() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(viewBinding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
     }
-
-
 }

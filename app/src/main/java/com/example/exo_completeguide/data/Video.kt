@@ -37,3 +37,25 @@ fun getTelewebionPlayListHls(): ArrayList<Video> {
         ),
     )
 }
+
+fun getTelewebionLive(): ArrayList<Video> {
+    return arrayListOf(
+        Video(
+            "Telewebion Live tv3",
+            "https://ncdn.telewebion.com/tv3/live/playlist.m3u8"
+        )
+    )
+}
+
+fun getTelewebionLivePlayList(): ArrayList<Video> {
+    return arrayListOf(
+        Video(
+            "Telewebion Live tv3",
+            "https://ncdn.telewebion.com/tv3/live/playlist.m3u8"
+        ),
+        Video(
+            "Telewebion Live tv4",
+            "https://ncdn.telewebion.com/tv4/live/playlist.m3u8"
+        )
+    )
+}

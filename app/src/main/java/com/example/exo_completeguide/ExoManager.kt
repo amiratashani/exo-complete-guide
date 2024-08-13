@@ -36,29 +36,26 @@ private const val DOWNLOAD_CONTENT_DIRECTORY = "downloads"
 @UnstableApi
 object ExoManager {
 
-    var downloadCache: Cache? = null
-    var downloadManager: DownloadManager? = null
-    var databaseProvider: DatabaseProvider? = null
-    var downloadDirectory: File? = null
-    var downloadNotificationHelper: DownloadNotificationHelper? = null
-
+    private var downloadCache: Cache? = null
+    private var downloadManager: DownloadManager? = null
+    private var databaseProvider: DatabaseProvider? = null
+    private var downloadDirectory: File? = null
+    private var downloadNotificationHelper: DownloadNotificationHelper? = null
     private var dataSourceFactory: DataSource.Factory? = null
     private var httpDataSourceFactory: DataSource.Factory? = null
 
     @Synchronized
     fun getDataSourceFactory(context: Context): DataSource.Factory {
-        var context = context
         if (dataSourceFactory == null) {
-            context = context.applicationContext
-            val upstreamFactory =
+            val upstreamFactory:DefaultDataSource.Factory =
                 DefaultDataSource.Factory(
-                    context,
-                    getHttpDataSourceFactory(context)
+                    context.applicationContext,
+                    getHttpDataSourceFactory(context.applicationContext)
                 )
             dataSourceFactory =
                 buildReadOnlyCacheDataSource(
                     upstreamFactory,
-                    getDownloadCache(context)
+                    getDownloadCache(context.applicationContext)
                 )
         }
         return dataSourceFactory!!
@@ -72,26 +69,6 @@ object ExoManager {
             .setUpstreamDataSourceFactory(upstreamFactory)
             .setCacheWriteDataSinkFactory(null)
             .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-    }
-
-
-    @Synchronized
-    fun getDownloadManager(context: Context): DownloadManager {
-        ensureDownloadManagerInitialized(context)
-        return downloadManager!!
-    }
-
-    @Synchronized
-    private fun ensureDownloadManagerInitialized(context: Context) {
-        if (downloadManager == null) {
-            downloadManager = DownloadManager(
-                context,
-                getDatabaseProvider(context),
-                getDownloadCache(context),
-                getHttpDataSourceFactory(context),
-                Executors.newFixedThreadPool( /* nThreads= */6)
-            )
-        }
     }
 
     @Synchronized
@@ -117,12 +94,39 @@ object ExoManager {
         }
         // The device doesn't support HttpEngine or we don't want to allow Cronet, or we failed to
         // instantiate a CronetEngine.
-        val cookieManager: CookieManager = CookieManager()
+        val cookieManager = CookieManager()
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ORIGINAL_SERVER)
         CookieHandler.setDefault(cookieManager)
         httpDataSourceFactory = DefaultHttpDataSource.Factory()
         return httpDataSourceFactory!!
     }
+
+
+
+
+
+
+
+    @Synchronized
+    fun getDownloadManager(context: Context): DownloadManager {
+        ensureDownloadManagerInitialized(context)
+        return downloadManager!!
+    }
+
+    @Synchronized
+    private fun ensureDownloadManagerInitialized(context: Context) {
+        if (downloadManager == null) {
+            downloadManager = DownloadManager(
+                context,
+                getDatabaseProvider(context),
+                getDownloadCache(context),
+                getHttpDataSourceFactory(context),
+                Executors.newFixedThreadPool( /* nThreads= */6)
+            )
+        }
+    }
+
+
 
     @Synchronized
     private fun getDatabaseProvider(context: Context): DatabaseProvider {
@@ -167,12 +171,6 @@ object ExoManager {
                 )
         }
         return downloadNotificationHelper!!
-    }
-
-
-    fun buildRenderersFactory(context: Context): RenderersFactory {
-        val extensionRendererMode: @ExtensionRendererMode Int = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
-        return DefaultRenderersFactory(context.applicationContext).setExtensionRendererMode(extensionRendererMode)
     }
 
 

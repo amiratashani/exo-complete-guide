@@ -6,4 +6,9 @@
     </style>
 
     <style name="Theme.ExoCompleteGuide" parent="Base.Theme.ExoCompleteGuide" />
+
+    <style name="TrackSelectionDialogThemeOverlay" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="windowNoTitle">false</item>
+    </style>
+
 </resources>
