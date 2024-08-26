@@ -23,6 +23,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.RepeatMode
+import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
@@ -376,6 +377,11 @@ open class PlayerActivity : AppCompatActivity(), ControllerVisibilityListener {
     }
 
     inner class PlayerEventListener : Player.Listener {
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            super.onTimelineChanged(timeline, reason)
+            Log.e("Amir", "onTimelineChanged: $timeline | $reason" )
+        }
 
         override fun onPlaybackStateChanged(playbackState: @Player.State Int) {
             if (playbackState == Player.STATE_ENDED) {

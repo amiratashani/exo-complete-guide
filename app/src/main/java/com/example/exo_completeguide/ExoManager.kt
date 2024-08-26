@@ -21,6 +21,7 @@ import androidx.media3.exoplayer.DefaultRenderersFactory.ExtensionRendererMode
 import androidx.media3.exoplayer.RenderersFactory
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
+import com.example.exo_completeguide.download.DownloadTracker
 import com.example.exo_completeguide.download.ExoDownloadService
 import org.chromium.net.CronetEngine
 import java.io.File
@@ -43,6 +44,9 @@ object ExoManager {
     private var downloadNotificationHelper: DownloadNotificationHelper? = null
     private var dataSourceFactory: DataSource.Factory? = null
     private var httpDataSourceFactory: DataSource.Factory? = null
+
+    private var downloadTracker: DownloadTracker? = null
+
 
     @Synchronized
     fun getDataSourceFactory(context: Context): DataSource.Factory {
@@ -100,9 +104,6 @@ object ExoManager {
         httpDataSourceFactory = DefaultHttpDataSource.Factory()
         return httpDataSourceFactory!!
     }
-
-
-
 
 
 
@@ -172,6 +173,13 @@ object ExoManager {
         }
         return downloadNotificationHelper!!
     }
+
+
+    fun getDownloadTracker(context: Context): DownloadTracker {
+        ensureDownloadManagerInitialized(context)
+        return downloadTracker!!
+    }
+
 
 
 }

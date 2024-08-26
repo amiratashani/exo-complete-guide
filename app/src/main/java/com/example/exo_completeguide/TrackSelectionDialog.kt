@@ -303,7 +303,7 @@ class TrackSelectionDialog : DialogFragment() {
          * @param onDismissListener [DialogInterface.OnDismissListener] called when the dialog is
          * dismissed.
          */
-        private fun createForTracksAndParameters(
+        internal fun createForTracksAndParameters(
             titleId: Int,
             tracks: Tracks,
             trackSelectionParameters: TrackSelectionParameters,

@@ -29,4 +29,19 @@
     <string name="error_unsupported_video">Media includes video tracks, but none are playable by this device</string>
 
     <string name="error_unsupported_audio">Media includes audio tracks, but none are playable by this device</string>
+
+    <string name="exo_download_description">Download</string>
+    <string name="exo_download_downloading">Mendownload</string>
+    <string name="exo_download_completed">Download selesai</string>
+    <string name="exo_download_failed">Download gagal</string>
+    <string name="exo_download_removing">Menghapus download</string>
+    <string name="exo_download_paused">Download dijeda</string>
+    <string name="exo_download_paused_for_network">Download menunggu konektivitas jaringan</string>
+    <string name="exo_download_paused_for_wifi">Download menunggu konektivitas Wi-Fi</string>
+    <string name="download_start_error_offline_license">Failed to obtain offline license</string>
+
+    <string name="download_scheme_unsupported">This demo app only supports downloading http streams</string>
+
+    <string name="download_live_unsupported">This demo app does not support downloading live content</string>
+    <string name="download_start_error">Failed to start download</string>
 </resources>
