@@ -1,27 +1,47 @@
 package com.example.exo_completeguide
 
-import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
+import androidx.media3.exoplayer.offline.DownloadRequest
+import androidx.media3.exoplayer.offline.DownloadService
 import com.example.exo_completeguide.data.getTelewebionHls
 import com.example.exo_completeguide.data.getTelewebionLive
 import com.example.exo_completeguide.data.getTelewebionLivePlayList
 import com.example.exo_completeguide.data.getTelewebionPlayListHls
 import com.example.exo_completeguide.databinding.ActivityMainBinding
-import com.example.exo_completeguide.download.DownloadTracker
+import com.example.exo_completeguide.download.ExoDownloadService
+import java.lang.Exception
 
 
 @OptIn(UnstableApi::class)
 class MainActivity : AppCompatActivity() {
+    private lateinit var downloadManager: DownloadManager
+
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityMainBinding.inflate(layoutInflater)
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(viewBinding.root)
         updateWindowInset()
+        downloadManager = ExoManager.getDownloadManager(this)
 
 
         viewBinding.apply {
@@ -62,9 +83,47 @@ class MainActivity : AppCompatActivity() {
 
             btn6.isEnabled = false
             btn6.setOnClickListener {
-
             }
 
+            btn7.setOnClickListener {
+                val contentUri = "https://dl.telewebion.com/935daa1b-d283-4eca-8cdc-7b79450762c9/0xddaee36/480p/"
+                val downloadRequest = DownloadRequest.Builder("0xddad9a8", Uri.parse(contentUri)).build()
+                DownloadService.sendAddDownload(
+                    this@MainActivity,
+                    ExoDownloadService::class.java,
+                    downloadRequest,
+                    true
+                )
+            }
+
+            downloadManager.addListener(object : DownloadManager.Listener{
+                override fun onDownloadChanged(
+                    downloadManager: DownloadManager,
+                    download: Download,
+                    finalException: Exception?
+                ) {
+                    super.onDownloadChanged(downloadManager, download, finalException)
+                }
+
+                override fun onDownloadRemoved(
+                    downloadManager: DownloadManager,
+                    download: Download
+                ) {
+                    super.onDownloadRemoved(downloadManager, download)
+
+                }
+
+                override fun onDownloadsPausedChanged(
+                    downloadManager: DownloadManager,
+                    downloadsPaused: Boolean
+                ) {
+                    super.onDownloadsPausedChanged(downloadManager, downloadsPaused)
+                }
+
+                override fun onIdle(downloadManager: DownloadManager) {
+                    super.onIdle(downloadManager)
+                }
+            })
         }
     }
 
@@ -76,6 +135,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+//    private fun checkNotificationPermission() {
+//        when {
+//            ContextCompat.checkSelfPermission(
+//                this, Manifest.permission.POST_NOTIFICATIONS
+//            ) == PackageManager.PERMISSION_GRANTED -> {
+//                Toast.makeText(this, "Notification permission already granted", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+//                Toast.makeText(this, "Notification permission is needed to show notifications", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            else -> {
+//                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+//            }
+//        }
+//    }
 
 }

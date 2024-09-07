@@ -28,7 +28,7 @@ class ExoDownloadService : DownloadService(
             ExoManager.getDownloadNotificationHelper(this)
         downloadManager.addListener(
             TerminalStateNotificationHelper(
-                this, downloadNotificationHelper, FOREGROUND_NOTIFICATION_ID + 1
+                this, downloadNotificationHelper, FOREGROUND_NOTIFICATION_ID + 9
             )
         )
         return downloadManager
