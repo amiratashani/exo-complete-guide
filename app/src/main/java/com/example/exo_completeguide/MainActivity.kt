@@ -1,7 +1,10 @@
 package com.example.exo_completeguide
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -9,7 +12,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.media3.common.util.UnstableApi
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     ) { isGranted: Boolean ->
         if (isGranted) {
             Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show()
+            startDownload()
         } else {
             Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
         }
@@ -86,14 +89,23 @@ class MainActivity : AppCompatActivity() {
             }
 
             btn7.setOnClickListener {
-                val contentUri = "https://dl.telewebion.com/935daa1b-d283-4eca-8cdc-7b79450762c9/0xddaee36/480p/"
-                val downloadRequest = DownloadRequest.Builder("0xddad9a8", Uri.parse(contentUri)).build()
-                DownloadService.sendAddDownload(
-                    this@MainActivity,
-                    ExoDownloadService::class.java,
-                    downloadRequest,
-                    true
-                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    checkNotificationPermission()
+                } else {
+                    startDownload()
+                }
+            }
+
+            btn8.setOnClickListener {
+               pauseDownload("-1623720552")
+            }
+
+            btn9.setOnClickListener{
+                resumeDownload("-1623720552")
+            }
+
+            btn10.setOnClickListener{
+                deleteDownload("-1623720552")
             }
 
             downloadManager.addListener(object : DownloadManager.Listener{
@@ -110,7 +122,6 @@ class MainActivity : AppCompatActivity() {
                     download: Download
                 ) {
                     super.onDownloadRemoved(downloadManager, download)
-
                 }
 
                 override fun onDownloadsPausedChanged(
@@ -135,22 +146,61 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    private fun checkNotificationPermission() {
-//        when {
-//            ContextCompat.checkSelfPermission(
-//                this, Manifest.permission.POST_NOTIFICATIONS
-//            ) == PackageManager.PERMISSION_GRANTED -> {
-//                Toast.makeText(this, "Notification permission already granted", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-//                Toast.makeText(this, "Notification permission is needed to show notifications", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            else -> {
-//                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-//            }
-//        }
-//    }
+    private fun startDownload(){
+        val contentUri = "https://dl.telewebion.com/c144517c-10bf-4d21-820b-b8c612851da1/0xddb6afb/480p/"
+        val downloadRequest = DownloadRequest.Builder("-1623720552", Uri.parse(contentUri)).build()
+        DownloadService.sendAddDownload(
+            this@MainActivity,
+            ExoDownloadService::class.java,
+            downloadRequest,
+            true
+        )
+    }
+
+    private fun pauseDownload(downloadId: String){
+        DownloadService.sendSetStopReason(
+            this@MainActivity,
+            ExoDownloadService::class.java,
+            downloadId,
+            Download.FAILURE_REASON_UNKNOWN,
+            true)
+    }
+
+    private fun resumeDownload(downloadId: String){
+        DownloadService.sendSetStopReason(
+            this@MainActivity,
+            ExoDownloadService::class.java,
+            downloadId,
+            Download.STOP_REASON_NONE,
+            true
+        )
+    }
+
+    private fun deleteDownload(downloadId: String){
+        downloadManager.removeDownload(downloadId)
+    }
+
+    private fun getAllDownloads(): MutableList<Download>{
+        return downloadManager.currentDownloads
+    }
+
+    private fun checkNotificationPermission() {
+        when {
+            ContextCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                Toast.makeText(this, "Notification permission already granted", Toast.LENGTH_SHORT).show()
+                startDownload()
+            }
+
+            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                Toast.makeText(this, "Notification permission is needed to show notifications", Toast.LENGTH_SHORT).show()
+            }
+
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
 
 }

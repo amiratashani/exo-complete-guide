@@ -31,13 +31,13 @@
     <string name="error_unsupported_audio">Media includes audio tracks, but none are playable by this device</string>
 
     <string name="exo_download_description">Download</string>
-    <string name="exo_download_downloading">Mendownload</string>
-    <string name="exo_download_completed">Download selesai</string>
-    <string name="exo_download_failed">Download gagal</string>
-    <string name="exo_download_removing">Menghapus download</string>
-    <string name="exo_download_paused">Download dijeda</string>
-    <string name="exo_download_paused_for_network">Download menunggu konektivitas jaringan</string>
-    <string name="exo_download_paused_for_wifi">Download menunggu konektivitas Wi-Fi</string>
+    <string name="exo_download_downloading">Downloading</string>
+    <string name="exo_download_completed">Download Completed</string>
+    <string name="exo_download_failed">Download failed</string>
+    <string name="exo_download_removing">removing download</string>
+    <string name="exo_download_paused">Download paused</string>
+    <string name="exo_download_paused_for_network">Download paused for network</string>
+    <string name="exo_download_paused_for_wifi">Download paused for Wi-Fi</string>
     <string name="download_start_error_offline_license">Failed to obtain offline license</string>
 
     <string name="download_scheme_unsupported">This demo app only supports downloading http streams</string>

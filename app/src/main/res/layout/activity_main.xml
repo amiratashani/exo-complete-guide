@@ -49,14 +49,47 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Download video"
-        tools:ignore="MissingConstraints" />
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/flow1" />
+
+    <Button
+        android:id="@+id/btn8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pause video"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn7"/>
+
+    <Button
+        android:id="@+id/btn9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resume video"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn8" />
+
+    <Button
+        android:id="@+id/btn10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete video"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn9" />
 
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/flow1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        app:constraint_referenced_ids="btn1,btn2,btn3,btn4,btn5,btn6, btn7"
+        app:constraint_referenced_ids="btn1,btn2,btn3,btn4,btn5,btn6"
         app:flow_horizontalBias="0"
         app:flow_horizontalGap="10dp"
         app:flow_horizontalStyle="packed"
@@ -65,6 +98,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+    </androidx.constraintlayout.helper.widget.Flow>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
