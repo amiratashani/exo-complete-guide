@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,7 +27,10 @@ import com.example.exo_completeguide.data.getTelewebionLivePlayList
 import com.example.exo_completeguide.data.getTelewebionPlayListHls
 import com.example.exo_completeguide.databinding.ActivityMainBinding
 import com.example.exo_completeguide.download.ExoDownloadService
-import java.lang.Exception
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @OptIn(UnstableApi::class)
@@ -35,6 +40,8 @@ class MainActivity : AppCompatActivity() {
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityMainBinding.inflate(layoutInflater)
     }
+
+    private var selectedVideo : Int = 0
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -97,15 +104,48 @@ class MainActivity : AppCompatActivity() {
             }
 
             btn8.setOnClickListener {
-               pauseDownload("-1623720552")
+                var downloadId = ""
+                when(selectedVideo){
+                    1 -> {downloadId = "-448633644"}
+                    2 -> {downloadId = "-1623720552"}
+                    3 -> {downloadId = "1379405696"}
+                    4 -> {downloadId = "330729129"}
+                }
+               pauseDownload(downloadId)
             }
 
             btn9.setOnClickListener{
-                resumeDownload("-1623720552")
+                var downloadId = ""
+                when(selectedVideo){
+                    1 -> {downloadId = "-448633644"}
+                    2 -> {downloadId = "-1623720552"}
+                    3 -> {downloadId = "1379405696"}
+                    4 -> {downloadId = "330729129"}
+                }
+                resumeDownload(downloadId)
             }
 
             btn10.setOnClickListener{
-                deleteDownload("-1623720552")
+                var downloadId = ""
+                when(selectedVideo){
+                    1 -> {downloadId = "-448633644"}
+                    2 -> {downloadId = "-1623720552"}
+                    3 -> {downloadId = "1379405696"}
+                    4 -> {downloadId = "330729129"}
+                }
+                deleteDownload(downloadId)
+            }
+
+            radioGroup.setOnCheckedChangeListener{ group, checkedId ->
+                val radioButton = findViewById<RadioButton>(checkedId)
+                val selectedText = radioButton.text
+                when(selectedText){
+                    "Video 1" -> selectedVideo = 1
+                    "Video 2" -> selectedVideo = 2
+                    "Video 3" -> selectedVideo = 3
+                    "Video 4" -> selectedVideo = 4
+                }
+
             }
 
             downloadManager.addListener(object : DownloadManager.Listener{
@@ -115,6 +155,19 @@ class MainActivity : AppCompatActivity() {
                     finalException: Exception?
                 ) {
                     super.onDownloadChanged(downloadManager, download, finalException)
+                    if(download.state == Download.STATE_COMPLETED){
+                        Log.d("TAG-sahar", "111111111111onDownloadChanged: COMPETED")
+                    }
+                    CoroutineScope(Dispatchers.Default).launch {
+                        while(download.state == Download.STATE_DOWNLOADING){
+                            if (download.percentDownloaded >= 0 && download.stopReason != Download.STATE_COMPLETED) {
+                                Log.d("TAG-sahar", "Progress: ${download.percentDownloaded}%")
+                                Log.d("TAG-sahar", "Progress: ${download.bytesDownloaded}")
+                                Log.d("TAG-sahar", "Progress: ${download.state}")
+                            }
+                            delay(100)
+                        }
+                    }
                 }
 
                 override fun onDownloadRemoved(
@@ -147,8 +200,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startDownload(){
-        val contentUri = "https://dl.telewebion.com/c144517c-10bf-4d21-820b-b8c612851da1/0xddb6afb/480p/"
-        val downloadRequest = DownloadRequest.Builder("-1623720552", Uri.parse(contentUri)).build()
+        var contentUri = ""
+        var downloadId = ""
+        when(selectedVideo){
+            1 ->{
+                //2.86 MB
+                contentUri = "https://dl.telewebion.com/c144517c-10bf-4d21-820b-b8c612851da1/0xddad9a8/480p/"
+                downloadId = "-448633644"
+            }
+            2 ->{
+                //45.53 MB
+                contentUri = "https://dl.telewebion.com/c144517c-10bf-4d21-820b-b8c612851da1/0xddb6afb/480p/"
+                downloadId = "-1623720552"
+            }
+            3 ->{
+                //1.25 GB
+                contentUri = "https://dl.telewebion.com/c144517c-10bf-4d21-820b-b8c612851da1/0xdd98ea6/1080p/"
+                downloadId = "1379405696"
+            }
+            4 ->{
+                //34.14 MB
+                contentUri = "https://dl.telewebion.com/c144517c-10bf-4d21-820b-b8c612851da1/0xdd9550e/480p/"
+                downloadId = "330729129"
+            }
+        }
+        val downloadRequest = DownloadRequest.Builder(downloadId, Uri.parse(contentUri)).build()
         DownloadService.sendAddDownload(
             this@MainActivity,
             ExoDownloadService::class.java,
@@ -156,6 +232,8 @@ class MainActivity : AppCompatActivity() {
             true
         )
     }
+
+
 
     private fun pauseDownload(downloadId: String){
         DownloadService.sendSetStopReason(
@@ -199,6 +277,21 @@ class MainActivity : AppCompatActivity() {
 
             else -> {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private suspend fun monitorDownloadProgress() {
+        CoroutineScope(Dispatchers.IO).launch {
+            downloadManager.currentDownloads.forEach { download ->
+                while(download.state == Download.STATE_DOWNLOADING){
+                    if (download.percentDownloaded >= 0) {
+                        Log.d("TAG-sahar", "Progress: ${download.percentDownloaded}%")
+                        Log.d("TAG-sahar", "Progress: ${download.bytesDownloaded}")
+                        Log.d("TAG-sahar", "Progress: ${download.state}")
+                    }
+                    delay(1000)
+                }
             }
         }
     }
