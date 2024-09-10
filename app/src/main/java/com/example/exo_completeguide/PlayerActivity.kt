@@ -30,8 +30,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.DataSource
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.RenderersFactory
-import androidx.media3.exoplayer.drm.DefaultDrmSessionManagerProvider
 import androidx.media3.exoplayer.ima.ImaAdsLoader
 import androidx.media3.exoplayer.ima.ImaServerSideAdInsertionMediaSource
 import androidx.media3.exoplayer.mediacodec.MediaCodecRenderer
@@ -107,7 +105,6 @@ open class PlayerActivity : AppCompatActivity(), ControllerVisibilityListener {
             setErrorMessageProvider(PlayerErrorMessageProvider())
             requestFocus()
         }
-
 
 
         if (savedInstanceState != null) {
@@ -214,13 +211,6 @@ open class PlayerActivity : AppCompatActivity(), ControllerVisibilityListener {
 
 
     private fun createMediaSourceFactory(): MediaSource.Factory {
-
-        //Create Drm Manager
-        val drmSessionManagerProvider = DefaultDrmSessionManagerProvider()
-        drmSessionManagerProvider.setDrmHttpDataSourceFactory(
-            ExoManager.getHttpDataSourceFactory(this)
-        )
-
         //Create server ad loader
         val serverSideAdLoaderBuilder: ImaServerSideAdInsertionMediaSource.AdsLoader.Builder =
             ImaServerSideAdInsertionMediaSource.AdsLoader.Builder(this, playerView!!)
@@ -242,7 +232,6 @@ open class PlayerActivity : AppCompatActivity(), ControllerVisibilityListener {
 
         return DefaultMediaSourceFactory(this)
             .setDataSourceFactory(dataSourceFactory!!)
-            .setDrmSessionManagerProvider(drmSessionManagerProvider)
             .setLocalAdInsertionComponents(
                 adsLoaderProvider,
                 playerView!!

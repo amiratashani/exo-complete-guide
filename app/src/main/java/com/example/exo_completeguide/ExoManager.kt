@@ -25,9 +25,6 @@ import com.example.exo_completeguide.download.DownloadTracker
 import com.example.exo_completeguide.download.ExoDownloadService
 import org.chromium.net.CronetEngine
 import java.io.File
-import java.net.CookieHandler
-import java.net.CookieManager
-import java.net.CookiePolicy
 import java.util.concurrent.Executors
 
 
@@ -51,16 +48,12 @@ object ExoManager {
     @Synchronized
     fun getDataSourceFactory(context: Context): DataSource.Factory {
         if (dataSourceFactory == null) {
-            val upstreamFactory:DefaultDataSource.Factory =
-                DefaultDataSource.Factory(
-                    context.applicationContext,
-                    getHttpDataSourceFactory(context.applicationContext)
-                )
-            dataSourceFactory =
-                buildReadOnlyCacheDataSource(
-                    upstreamFactory,
-                    getDownloadCache(context.applicationContext)
-                )
+            val upstreamFactory: DefaultDataSource.Factory = DefaultDataSource.Factory(
+                context.applicationContext, getHttpDataSourceFactory(context.applicationContext)
+            )
+            dataSourceFactory = buildReadOnlyCacheDataSource(
+                upstreamFactory, getDownloadCache(context.applicationContext)
+            )
         }
         return dataSourceFactory!!
     }
@@ -68,10 +61,8 @@ object ExoManager {
     private fun buildReadOnlyCacheDataSource(
         upstreamFactory: DataSource.Factory, cache: Cache
     ): CacheDataSource.Factory {
-        return CacheDataSource.Factory()
-            .setCache(cache)
-            .setUpstreamDataSourceFactory(upstreamFactory)
-            .setCacheWriteDataSinkFactory(null)
+        return CacheDataSource.Factory().setCache(cache)
+            .setUpstreamDataSourceFactory(upstreamFactory).setCacheWriteDataSinkFactory(null)
             .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
     }
 
@@ -98,14 +89,9 @@ object ExoManager {
         }
         // The device doesn't support HttpEngine or we don't want to allow Cronet, or we failed to
         // instantiate a CronetEngine.
-        val cookieManager = CookieManager()
-        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ORIGINAL_SERVER)
-        CookieHandler.setDefault(cookieManager)
         httpDataSourceFactory = DefaultHttpDataSource.Factory()
         return httpDataSourceFactory!!
     }
-
-
 
 
     @Synchronized
@@ -125,9 +111,9 @@ object ExoManager {
                 Executors.newFixedThreadPool( /* nThreads= */6)
             )
         }
+        downloadTracker =
+            DownloadTracker(context, getHttpDataSourceFactory(context), downloadManager!!)
     }
-
-
 
     @Synchronized
     private fun getDatabaseProvider(context: Context): DatabaseProvider {
@@ -165,11 +151,9 @@ object ExoManager {
         context: Context?
     ): DownloadNotificationHelper {
         if (downloadNotificationHelper == null) {
-            downloadNotificationHelper =
-                DownloadNotificationHelper(
-                    context!!,
-                    ExoDownloadService.DOWNLOAD_NOTIFICATION_CHANNEL_ID
-                )
+            downloadNotificationHelper = DownloadNotificationHelper(
+                context!!, ExoDownloadService.DOWNLOAD_NOTIFICATION_CHANNEL_ID
+            )
         }
         return downloadNotificationHelper!!
     }
@@ -180,6 +164,20 @@ object ExoManager {
         return downloadTracker!!
     }
 
+
+    fun buildRenderersFactory(
+        context: Context, preferExtensionRenderer: Boolean
+    ): RenderersFactory {
+        val extensionRendererMode: @ExtensionRendererMode Int = if (preferExtensionRenderer) {
+            DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+        }
+            else {
+            DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
+        }
+        return DefaultRenderersFactory(context.applicationContext).setExtensionRendererMode(
+            extensionRendererMode
+        )
+    }
 
 
 }

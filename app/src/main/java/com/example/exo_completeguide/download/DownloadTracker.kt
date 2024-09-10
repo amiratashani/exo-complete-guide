@@ -66,18 +66,14 @@ class DownloadTracker(
         fun onDownloadsChanged()
     }
 
-    private val context: Context
-    private val listeners: CopyOnWriteArraySet<Listener>
-    private val downloads: HashMap<Uri, Download>
-    private val downloadIndex: DownloadIndex
+    private val context: Context = context.applicationContext
+    private val listeners: CopyOnWriteArraySet<Listener> = CopyOnWriteArraySet()
+    private val downloads: HashMap<Uri, Download> = HashMap()
+    private val downloadIndex: DownloadIndex = downloadManager.downloadIndex
 
     private var startDownloadDialogHelper: StartDownloadDialogHelper? = null
 
     init {
-        this.context = context.applicationContext
-        listeners = CopyOnWriteArraySet()
-        downloads = HashMap()
-        downloadIndex = downloadManager.downloadIndex
         downloadManager.addListener(DownloadManagerListener())
         loadDownloads()
     }
