@@ -104,21 +104,13 @@ class MainActivity : AppCompatActivity() {
             btn8.setOnClickListener {
                 var downloadId = ""
                 when (selectedVideo) {
-                    1 -> {
-                        downloadId = "-448633644"
-                    }
+                    1 -> { downloadId = "-448633644" }
 
-                    2 -> {
-                        downloadId = "-1623720552"
-                    }
+                    2 -> { downloadId = "-1623720552" }
 
-                    3 -> {
-                        downloadId = "1379405696"
-                    }
+                    3 -> { downloadId = "1379405696" }
 
-                    4 -> {
-                        downloadId = "330729129"
-                    }
+                    4 -> { downloadId = "330729129" }
                 }
                 pauseDownload(downloadId)
             }
@@ -126,21 +118,13 @@ class MainActivity : AppCompatActivity() {
             btn9.setOnClickListener {
                 var downloadId = ""
                 when (selectedVideo) {
-                    1 -> {
-                        downloadId = "-448633644"
-                    }
+                    1 -> { downloadId = "-448633644" }
 
-                    2 -> {
-                        downloadId = "-1623720552"
-                    }
+                    2 -> { downloadId = "-1623720552" }
 
-                    3 -> {
-                        downloadId = "1379405696"
-                    }
+                    3 -> { downloadId = "1379405696" }
 
-                    4 -> {
-                        downloadId = "330729129"
-                    }
+                    4 -> { downloadId = "330729129" }
                 }
                 resumeDownload(downloadId)
             }
@@ -148,21 +132,13 @@ class MainActivity : AppCompatActivity() {
             btn10.setOnClickListener {
                 var downloadId = ""
                 when (selectedVideo) {
-                    1 -> {
-                        downloadId = "-448633644"
-                    }
+                    1 -> { downloadId = "-448633644" }
 
-                    2 -> {
-                        downloadId = "-1623720552"
-                    }
+                    2 -> { downloadId = "-1623720552" }
 
-                    3 -> {
-                        downloadId = "1379405696"
-                    }
+                    3 -> { downloadId = "1379405696" }
 
-                    4 -> {
-                        downloadId = "330729129"
-                    }
+                    4 -> { downloadId = "330729129" }
                 }
                 deleteDownload(downloadId)
             }

@@ -125,7 +125,7 @@ object ExoManager {
                 Executors.newFixedThreadPool( /* nThreads= */6)
             )
         }
-        downloadManager?.maxParallelDownloads = 2
+        downloadManager?.maxParallelDownloads = 3
     }
 
 

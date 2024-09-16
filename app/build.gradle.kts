@@ -60,4 +60,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation( "com.github.stfalcon-studio:StfalconImageViewer:v1.0.1")
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 }
