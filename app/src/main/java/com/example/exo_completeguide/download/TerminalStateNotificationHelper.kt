@@ -45,7 +45,11 @@ class TerminalStateNotificationHelper(
         }else {
             return
         }
-        NotificationUtil.setNotification(context, nextNotificationId++, notification);
+        NotificationUtil.setNotification(
+            context,
+            download.request.id.toIntOrNull() ?: nextNotificationId++,
+            notification
+        )
     }
 
 

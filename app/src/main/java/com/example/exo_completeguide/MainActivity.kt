@@ -29,11 +29,18 @@ import com.example.exo_completeguide.data.getTelewebionLivePlayList
 import com.example.exo_completeguide.data.getTelewebionPlayListHls
 import com.example.exo_completeguide.databinding.ActivityMainBinding
 import com.example.exo_completeguide.download.ExoDownloadService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 
 @OptIn(UnstableApi::class)
 class MainActivity : AppCompatActivity() {
     private lateinit var downloadManager: DownloadManager
+    private var job: Job? = null
 
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityMainBinding.inflate(layoutInflater)
@@ -161,37 +168,54 @@ class MainActivity : AppCompatActivity() {
                     finalException: Exception?
                 ) {
                     super.onDownloadChanged(downloadManager, download, finalException)
-                    val downloads = getDownloadList()
 
+                    val downloads = getDownloadList()
                     for(item in downloads){
+                        if(download.state == Download.STATE_COMPLETED) job?.cancel()
                         Log.d("TAG-sahar", "####: state: ${item.state}, stopReason: ${item.stopReason}, failureReason${item.failureReason}, id: ${item.request.id}")
                     }
 
-
-                    when{
-                        (downloadManager.notMetRequirements and Requirements.NETWORK_UNMETERED) != 0 ->{
-                            Log.d("TAG-sahar", "***** NETWORK_UNMETERED")
-                        }
-                        (downloadManager.notMetRequirements and Requirements.NETWORK) != 0 -> {
-                            Log.d("TAG-sahar", "***** NETWORK")
-                        }
-                        (downloadManager.notMetRequirements and Requirements.DEVICE_STORAGE_NOT_LOW) != 0 -> {
-                            Log.d("TAG-sahar", "***** DEVICE_STORAGE_NOT_LOW")
-                        }
-                        else -> {
-                            Log.d("TAG-sahar", "***** exo_download_paused")
-                        }
+                    if(download.state == Download.STATE_STOPPED || download.state == Download.STATE_COMPLETED ||
+                        download.state == Download.STATE_FAILED || download.state == Download.STATE_REMOVING){
+                        job?.cancel()
                     }
 
-                    if (download.state == Download.STATE_COMPLETED) {
-                        Log.d("TAG-sahar", "111111111111 Completed: COMPETED")
+                    if(job != null && job?.isActive == true) return
+
+                    if(download.state == Download.STATE_DOWNLOADING){
+                        job = CoroutineScope(Dispatchers.Default).launch {
+                                while (isActive){
+                                    Log.d("TAG-sahar", "Downloading: ${download.percentDownloaded}")
+                                    delay(1000)
+                                }
+                            }
                     }
-                    if (download.state == Download.STATE_FAILED){
-                        Log.d("TAG-sahar", "222222222222222 Failed : ${download.stopReason}")
-                    }
-                    if (download.state == Download.STATE_STOPPED){
-                        Log.d("TAG-sahar", "333333333333333 STOPPED : ${download.state}")
-                    }
+
+
+//                    when{
+//                        (downloadManager.notMetRequirements and Requirements.NETWORK_UNMETERED) != 0 ->{
+//                            Log.d("TAG-sahar", "***** NETWORK_UNMETERED")
+//                        }
+//                        (downloadManager.notMetRequirements and Requirements.NETWORK) != 0 -> {
+//                            Log.d("TAG-sahar", "***** NETWORK")
+//                        }
+//                        (downloadManager.notMetRequirements and Requirements.DEVICE_STORAGE_NOT_LOW) != 0 -> {
+//                            Log.d("TAG-sahar", "***** DEVICE_STORAGE_NOT_LOW")
+//                        }
+//                        else -> {
+//                            Log.d("TAG-sahar", "***** exo_download_paused")
+//                        }
+//                    }
+//
+//                    if (download.state == Download.STATE_COMPLETED) {
+//                        Log.d("TAG-sahar", "111111111111 Completed: COMPETED")
+//                    }
+//                    if (download.state == Download.STATE_FAILED){
+//                        Log.d("TAG-sahar", "222222222222222 Failed : ${download.stopReason}")
+//                    }
+//                    if (download.state == Download.STATE_STOPPED){
+//                        Log.d("TAG-sahar", "333333333333333 STOPPED : ${download.state}")
+//                    }
                 }
 
                 override fun onDownloadRemoved(
@@ -337,23 +361,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun monitorDownloadProgress() {
-        val downloads = downloadManager.currentDownloads
-        for (download in downloads) {
-            download.percentDownloaded
-            val id = download.request.id
-            val contentLength = download.contentLength
-            val bytesDownloaded = download.bytesDownloaded
-            val percentDownloaded = if (contentLength > 0) {
-                (bytesDownloaded * 100 / contentLength).toFloat()
-            } else {
-                0f
-            }
-            val prettyDownloaded = bytesDownloaded / (1024 * 1024)
-            Log.d("TAG-sahar", "Download ID: $id, Progress: $percentDownloaded%")
-            Log.d("TAG-sahar", "Download ID: $id, bytesDownloaded: $prettyDownloaded")
-        }
-    }
 
     fun getDownloadList(): List<Download> {
         val downloadList = mutableListOf<Download>()
